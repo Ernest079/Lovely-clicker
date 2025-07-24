@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@theme {
+    --color-fuchsiaNeon: '#ff55ff';
+    --color-fuchsiaDark: '#ff00ff';
+    --color-purpleDark: '#aa00aa';
+    --color-fuchsiaDeep: '#550055';
+    --color-pinkLight: '#ff77ff';
+    --color-pinkMedium: '#ff99ff';
+    --color-pinkLighter: '#ffbbff';
+    --color-purpleDeep: '#cc00cc';
+    --color-redPink: '#ff66aa';
+    --color-darkPink: '#ff0088';
+    --color-mediumPink: '#ff3377';
+    --color-lightPink: '#ff5599';
+    --color-vividPink: '#ff0099';
+}

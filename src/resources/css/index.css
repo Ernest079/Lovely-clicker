@@ -1,1 +1,124 @@
 @import "tailwindcss";
+
+/* @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); */
+
+@theme {
+  --color-fuchsiaNeon: #ff55ff;
+  --color-fuchsiaDark: #ff00ff;
+  --color-purpleDark: #aa00aa;
+  --color-fuchsiaDeep: #550055;
+  --color-pinkLight: #ff77ff;
+  --color-pinkMedium: #ff99ff;
+  --color-pinkLighter: #ffbbff;
+  --color-purpleDeep: #cc00cc;
+  --color-redPink: #ff66aa;
+  --color-darkPink: #ff0088;
+  --color-mediumPink: #ff3377;
+  --color-lightPink: #ff5599;
+  --color-vividPink: #ff0099;
+
+  @keyframes heartbeat {
+    0% {
+      transform: rotateX(10deg) rotateY(-5deg) scale(1);
+    }
+
+    50% {
+      transform: rotateX(10deg) rotateY(-5deg) scale(1.05);
+    }
+
+    100% {
+      transform: rotateX(10deg) rotateY(-5deg) scale(1);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: rotateX(10deg) rotateY(-5deg) translateY(0);
+    }
+
+    50% {
+      transform: rotateX(10deg) rotateY(-5deg) translateY(-5px);
+    }
+  }
+
+  @keyframes burst-anim {
+    0% {
+      transform: scale(0.1) translate(0, 0);
+      opacity: 0;
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(1) translate(var(--tx), var(--ty));
+      opacity: 0;
+    }
+  }
+}
+
+@layer components {
+  .title-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    perspective: 500px;
+    width: 90%;
+  }
+
+  .title {
+    /* font-family: 'Press Start 2P', cursive; */
+    font-size: 1.8em;
+    color: #ff55ff;
+    text-shadow:
+      2px 2px 0 #ff00ff,
+      3px 3px 0 #aa00aa,
+      4px 4px 0 #550055;
+    transform: rotateX(10deg) rotateY(-5deg);
+    animation: heartbeat 1.5s infinite, float 3s ease-in-out infinite;
+    display: inline-block;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 3px solid #ff55ff;
+    box-shadow:
+      0 0 10px #ff00ff,
+      inset 0 0 10px #ff00ff;
+    word-wrap: break-word;
+  }
+}
+
+#galaxyCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100vw; 
+  height: 100vh;
+}
+
+#loveRain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100vw; 
+  height: 100vh;
+}
+
+.burst-text {
+  position: absolute;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #ff55ff;
+  text-shadow: 0 0 5px #ff00ff;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  animation: burst-anim 2s forwards;
+}
