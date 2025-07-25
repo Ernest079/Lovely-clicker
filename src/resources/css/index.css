@@ -58,6 +58,18 @@
       opacity: 0;
     }
   }
+
+  @keyframes burst-fade-out {
+    0% {
+      opacity: 1;
+      transform: translate(var(--tx), var(--ty)) scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(var(--tx), var(--ty)) scale(1.2);
+    }
+  }
 }
 
 @layer components {
@@ -75,30 +87,128 @@
   .title {
     /* font-family: 'Press Start 2P', cursive; */
     font-size: 1.8em;
-    color: #ff55ff;
+    color: var(--color-fuchsiaNeon);
     text-shadow:
-      2px 2px 0 #ff00ff,
-      3px 3px 0 #aa00aa,
-      4px 4px 0 #550055;
+      2px 2px 0 var(--color-fuchsiaDark),
+      3px 3px 0 var(--color-purpleDark),
+      4px 4px 0 var(--color-fuchsiaDeep);
     transform: rotateX(10deg) rotateY(-5deg);
     animation: heartbeat 1.5s infinite, float 3s ease-in-out infinite;
     display: inline-block;
     padding: 15px;
     background-color: rgba(0, 0, 0, 0.7);
-    border: 3px solid #ff55ff;
+    border: 3px solid var(--color-fuchsiaNeon);
     box-shadow:
-      0 0 10px #ff00ff,
-      inset 0 0 10px #ff00ff;
+      0 0 10px var(--color-fuchsiaDark),
+      inset 0 0 10px var(--color-fuchsiaDark);
     word-wrap: break-word;
+  }
+
+  .button-heart {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    cursor: pointer;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(255, 105, 180, 0.5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4em;
+    color: white;
+    border: 3px solid white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  }
+
+  .shop-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    max-width: 600px;
+    width: 90%;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid white;
+  }
+
+  .upgrade-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+  }
+
+  .upgrade-item-available {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .upgrade-item-purchased {
+    background-color: rgba(0, 100, 0, 0.5);
+  }
+
+  .upgrade-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+  }
+
+  .upgrade-button-available {
+    background-color: #007bff;
+    cursor: pointer;
+  }
+
+  .upgrade-button-purchased {
+    background-color: #888;
+    cursor: not-allowed;
+  }
+
+  /* Para el botón de inspiración, usaré tus clases de Tailwind existentes y añadiré una si es necesario */
+  .inspiration-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    padding: 15px 25px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+  }
+
+  .inspiration-button:not(:disabled) {
+    background-color: #ffcc00;
+    color: black;
+    cursor: pointer;
+  }
+
+  .inspiration-button:disabled {
+    background-color: #888;
+    color: white; /* O un color más oscuro para indicar deshabilitado */
+    cursor: not-allowed;
   }
 }
 
+/* Clases Tailwind existentes, si quieres mantenerlas o moverlas */
 #galaxyCanvas {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 0;
-  width: 100vw; 
+  width: 100vw;
   height: 100vh;
 }
 
@@ -107,7 +217,7 @@
   top: 0;
   left: 0;
   z-index: 1;
-  width: 100vw; 
+  width: 100vw;
   height: 100vh;
 }
 
@@ -115,8 +225,8 @@
   position: absolute;
   font-family: 'Arial', sans-serif;
   font-weight: bold;
-  color: #ff55ff;
-  text-shadow: 0 0 5px #ff00ff;
+  color: var(--color-fuchsiaNeon);
+  text-shadow: 0 0 5px var(--color-fuchsiaDark);
   pointer-events: none;
   z-index: 10;
   opacity: 0;
