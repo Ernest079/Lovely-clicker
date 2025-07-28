@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GalaxyCanvas } from './components/GalaxyCanvas';
-import { LoveRainCanvas } from './components/LoveRainCanvas'; // Asegúrate de que esta ruta sea correcta
+import { LoveRainCanvas } from './components/LoveRainCanvas';
+// Asegúrate de que tu configuración de React importa index.css globalmente,
+// o si no, podrías importarlo aquí si es necesario:
+// import '../index.css';
 
 export function App() {
     // --- ESTADO DEL JUEGO ---
@@ -17,7 +20,7 @@ export function App() {
 
     const [cps, setCps] = useState(() => {
         const savedCps = localStorage.getItem('cps');
-        return savedCps ? parseInt(savedCps, 10) : 0; // Por defecto, 0 clics por segundo
+        return savedCps ? parseFloat(savedCps) : 0; // Cambiado a parseFloat para cargar decimales de CPS
     });
 
     // Estado para gestionar si la lluvia de cumplidos/emojis está activa y su velocidad
@@ -31,81 +34,89 @@ export function App() {
         return savedActive ? JSON.parse(savedActive) : false;
     });
 
+    // Velocidades iniciales MÁS LENTAS para las lluvias
     const [complimentRainSpeed, setComplimentRainSpeed] = useState(() => {
         const savedSpeed = localStorage.getItem('complimentRainSpeed');
-        return savedSpeed ? parseInt(savedSpeed, 10) : 20; // Menor número = más rápido, 50ms default
+        return savedSpeed ? parseInt(savedSpeed, 10) : 50;
     });
 
     const [emojiRainSpeed, setEmojiRainSpeed] = useState(() => {
         const savedSpeed = localStorage.getItem('emojiRainSpeed');
-        return savedSpeed ? parseInt(savedSpeed, 10) : 30; // Menor número = más rápido, 100ms default
+        return savedSpeed ? parseInt(savedSpeed, 10) : 50;
     });
 
-    // --- DEFINICIÓN DE MEJORAS ---
-    const upgrades = useRef([
+    // --- DEFINICIÓN DE MEJORAS Y ESTADO DE COSTOS DINÁMICOS ---
+    // Definición base de las mejoras. 'initialCost' es el precio de la primera compra.
+    const baseUpgrades = useRef([
         {
             id: 'clickPower1',
             name: 'Doble Caricia',
             description: 'Duplica el poder de tu clic.',
-            cost: 50,
-            effect: () => setClickPower(prev => prev * 2),
-            purchased: false
+            initialCost: 100, // Costo inicial
+            effect: () => setClickPower(prev => prev * 1.3),
+            type: 'repeatable'
         },
         {
             id: 'autoClicker1',
             name: 'Pensamiento Constante',
-            description: 'Genera 1 clic por segundo automáticamente.',
-            cost: 100,
-            effect: () => setCps(prev => prev + 1),
-            purchased: false
+            description: 'Genera mas clics por segundo automáticamente.',
+            initialCost: 50, // Costo inicial
+            effect: () => setCps(prev => prev + 0.20), // Aumenta en 0.20
+            type: 'repeatable'
         },
         {
             id: 'complimentRainUnlock',
             name: 'Desbloquear Lluvia de Cumplidos',
             description: 'Los cumplidos empiezan a caer del cielo. Cada cumplido suma un clic. (No es una mejora para la lluvia, sino que la inicia).',
-            cost: 250,
+            initialCost: 250,
             effect: () => setComplimentRainActive(true),
-            purchased: false
+            type: 'once'
         },
         {
-            id: 'complimentRainSpeed1',
-            name: 'Aumentar Lluvia de Cumplidos (Nivel 1)',
-            description: 'Los cumplidos caen más rápido (reduce el intervalo de caída).',
-            cost: 500,
-            effect: () => setComplimentRainSpeed(prev => Math.max(10, prev - 10)), // Mínimo 10ms
-            purchased: false
+            id: 'complimentRainSpeed',
+            name: 'Aumentar Lluvia de Cumplidos',
+            description: 'Los cumplidos caen más rápido.',
+            initialCost: 500,
+            effect: () => setComplimentRainSpeed(prev => Math.max(10, prev - 10)),
+            type: 'repeatable'
         },
         {
             id: 'emojiRainUnlock',
             name: 'Desbloquear Lluvia de Emojis',
             description: 'Los emojis de amor caen del cielo. Cada emoji suma un clic. (No es una mejora para la lluvia, sino que la inicia).',
-            cost: 750,
+            initialCost: 750,
             effect: () => setEmojiRainActive(true),
-            purchased: false
+            type: 'once'
         },
         {
-            id: 'emojiRainSpeed1',
-            name: 'Aumentar Lluvia de Emojis (Nivel 1)',
-            description: 'Los emojis caen más rápido (reduce el intervalo de caída).',
-            cost: 1000,
-            effect: () => setEmojiRainSpeed(prev => Math.max(20, prev - 20)), // Mínimo 20ms
-            purchased: false
+            id: 'emojiRainSpeed',
+            name: 'Aumentar Lluvia de Emojis',
+            description: 'Los emojis caen más rápido.',
+            initialCost: 1000,
+            effect: () => setEmojiRainSpeed(prev => Math.max(10, prev - 10)),
+            type: 'repeatable'
         }
-        // ... puedes añadir más mejoras aquí
     ]);
 
-    // Cargar estado de las mejoras desde localStorage al inicio
-    useEffect(() => {
-        const savedUpgrades = localStorage.getItem('gameUpgrades');
-        if (savedUpgrades) {
-            const parsedUpgrades = JSON.parse(savedUpgrades);
-            upgrades.current = upgrades.current.map(initialUpgrade => {
-                const saved = parsedUpgrades.find(su => su.id === initialUpgrade.id);
-                return saved ? { ...initialUpgrade, purchased: saved.purchased } : initialUpgrade;
-            });
+    // Estado para los costos actuales de las mejoras (dinámicos)
+    const [upgradeCosts, setUpgradeCosts] = useState(() => {
+        const savedUpgradeCosts = localStorage.getItem('upgradeCosts');
+        if (savedUpgradeCosts) {
+            return JSON.parse(savedUpgradeCosts);
         }
-    }, []);
+        // Si no hay costos guardados, usa los costos iniciales de baseUpgrades
+        const initialCosts = {};
+        baseUpgrades.current.forEach(upgrade => {
+            initialCosts[upgrade.id] = upgrade.initialCost;
+        });
+        return initialCosts;
+    });
 
+    // Estado para las mejoras 'once' que han sido compradas
+    const [purchasedOnceUpgrades, setPurchasedOnceUpgrades] = useState(() => {
+        const savedPurchased = localStorage.getItem('purchasedOnceUpgrades');
+        return savedPurchased ? JSON.parse(savedPurchased) : {};
+    });
 
     // --- EFECTOS DE GUARDADO Y LÓGICA DEL JUEGO ---
 
@@ -113,13 +124,14 @@ export function App() {
     useEffect(() => {
         localStorage.setItem('myZucaritaCount', count.toString());
         localStorage.setItem('clickPower', clickPower.toString());
-        localStorage.setItem('cps', cps.toString());
+        localStorage.setItem('cps', cps.toString()); // Guardar CPS como string (puede tener decimales)
         localStorage.setItem('complimentRainActive', JSON.stringify(complimentRainActive));
         localStorage.setItem('emojiRainActive', JSON.stringify(emojiRainActive));
         localStorage.setItem('complimentRainSpeed', complimentRainSpeed.toString());
         localStorage.setItem('emojiRainSpeed', emojiRainSpeed.toString());
-        localStorage.setItem('gameUpgrades', JSON.stringify(upgrades.current.map(u => ({ id: u.id, purchased: u.purchased }))));
-    }, [count, clickPower, cps, complimentRainActive, emojiRainActive, complimentRainSpeed, emojiRainSpeed]);
+        localStorage.setItem('upgradeCosts', JSON.stringify(upgradeCosts)); // Guarda los costos dinámicos
+        localStorage.setItem('purchasedOnceUpgrades', JSON.stringify(purchasedOnceUpgrades)); // Guarda las mejoras 'once'
+    }, [count, clickPower, cps, complimentRainActive, emojiRainActive, complimentRainSpeed, emojiRainSpeed, upgradeCosts, purchasedOnceUpgrades]);
 
 
     // Lógica de clicks por segundo (CPS)
@@ -168,14 +180,20 @@ export function App() {
         };
 
         const handleClick = (e) => {
-            createComplimentBurst(e.clientX, e.clientY);
-            setCount(prevCount => prevCount + clickPower); // Usa clickPower
+            // Solo crea el burst si el clic no es en un botón de mejora
+            if (!e.target.closest('.upgrade-button') && !e.target.closest('.inspiration-button')) {
+                createComplimentBurst(e.clientX, e.clientY);
+                setCount(prevCount => prevCount + clickPower); // Usa clickPower
+            }
         };
 
         const handleTouchStart = (e) => {
             const touch = e.touches[0];
-            createComplimentBurst(touch.clientX, touch.clientY);
-            setCount(prevCount => prevCount + clickPower); // Usa clickPower
+            // Solo crea el burst si el toque no es en un botón de mejora
+            if (!e.target.closest('.upgrade-button') && !e.target.closest('.inspiration-button')) {
+                createComplimentBurst(touch.clientX, touch.clientY);
+                setCount(prevCount => prevCount + clickPower); // Usa clickPower
+            }
         };
 
         document.addEventListener('click', handleClick);
@@ -195,50 +213,31 @@ export function App() {
 
     // --- FUNCIÓN PARA COMPRAR MEJORAS ---
     const buyUpgrade = (upgradeId) => {
-        const upgrade = upgrades.current.find(u => u.id === upgradeId);
-        if (upgrade && !upgrade.purchased && count >= upgrade.cost) {
-            setCount(prevCount => prevCount - upgrade.cost);
+        const upgrade = baseUpgrades.current.find(u => u.id === upgradeId);
+        const currentCost = upgradeCosts[upgradeId];
+
+        if (upgrade && count >= currentCost) {
+            if (upgrade.type === 'once' && purchasedOnceUpgrades[upgradeId]) {
+                alert("¡Ya tienes esta mejora!");
+                return;
+            }
+
+            setCount(prevCount => prevCount - currentCost);
             upgrade.effect(); // Aplica el efecto de la mejora
-            upgrade.purchased = true; // Marca como comprada
-            // Forzar una re-renderización para actualizar la UI de las mejoras
-            // Esto es un poco hacky, pero funciona para useRef.
-            // Una mejor práctica sería usar un estado para `upgrades`,
-            // pero esto cambiaría la estructura de useRef.
-            // Para mantenerlo simple con useRef, podrías re-asignar para disparar el efecto de guardado
-            localStorage.setItem('gameUpgrades', JSON.stringify(upgrades.current.map(u => ({ id: u.id, purchased: u.purchased }))));
-            // También podrías agregar un estado auxiliar para forzar el re-renderizado de la lista de mejoras.
-            // Por ejemplo, `const [upgradePurchased, setUpgradePurchased] = useState(false);`
-            // y luego `setUpgradePurchased(prev => !prev);` aquí.
-            // Y añadir `upgradePurchased` al array de dependencias donde se renderizan las mejoras.
-        } else if (upgrade.purchased) {
-            alert("¡Ya tienes esta mejora!");
+
+            if (upgrade.type === 'once') {
+                // Marca la mejora 'once' como comprada
+                setPurchasedOnceUpgrades(prev => ({ ...prev, [upgradeId]: true }));
+            } else if (upgrade.type === 'repeatable') {
+                // Aumenta el costo de la mejora 'repeatable'
+                setUpgradeCosts(prev => ({
+                    ...prev,
+                    // Aumenta el costo en 30% y redondea hacia abajo a un entero
+                    [upgradeId]: Math.floor(prev[upgradeId] * 1.30)
+                }));
+            }
         } else {
             alert("¡No tienes suficientes clicks!");
-        }
-    };
-
-    // --- CARACTERÍSTICA ADICIONAL: "Momento Inspirador" ---
-    const [lastInspirationTime, setLastInspirationTime] = useState(Date.now());
-    const [inspirationReady, setInspirationReady] = useState(false);
-    const inspirationCooldown = 10000; // 30 segundos
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (Date.now() - lastInspirationTime > inspirationCooldown) {
-                setInspirationReady(true);
-                clearInterval(interval);
-            }
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [lastInspirationTime]);
-
-    const triggerInspiration = () => {
-        if (inspirationReady) {
-            const bonusClicks = Math.floor(count * 0.1); // 10% de tus clicks actuales como bono
-            setCount(prevCount => prevCount + bonusClicks);
-            alert(`¡Momento Inspirador! Has ganado ${bonusClicks} clicks extra.`);
-            setLastInspirationTime(Date.now());
-            setInspirationReady(false);
         }
     };
 
@@ -246,57 +245,54 @@ export function App() {
     return (
         <>
             <GalaxyCanvas />
-            <div className="title-container">
-                <h1 className="title">Mi Zucarita</h1>
-                <div className="text-white">Clicks: {count}</div>
-                <div className="text-white">CPS: {cps}</div>
-                <div className="text-white">Poder de Clic: {clickPower}</div>
-            </div>
-
-            {/* Este div es el "botón" principal del clicker */}
-            <div className='button-heart'>
-                💖
-            </div>
-
-            <LoveRainCanvas
-                complimentRainActive={complimentRainActive}
-                emojiRainActive={emojiRainActive}
-                complimentRainSpeed={complimentRainSpeed}
-                emojiRainSpeed={emojiRainSpeed}
-                onParticleCollect={() => setCount(prev => prev + 1)} // Cada vez que cae una partícula, suma 1 clic
-            />
-
-            {/* Tienda de Mejoras */}
-            <div className="shop-container">
-                <h2>Mejoras</h2>
-                {upgrades.current.map(upgrade => (
-                    <div
-                        key={upgrade.id}
-                        className={`upgrade-item ${upgrade.purchased ? 'upgrade-item-purchased' : 'upgrade-item-available'}`}
-                    >
-                        <div>
-                            <h3>{upgrade.name}</h3>
-                            <p>{upgrade.description}</p>
+            <div className="game-container"> {/* Contenedor principal para organizar elementos */}
+                <div className="header-section">
+                    <h1 className="title">Mi Zucarita</h1>
+                    <div className="stats-container">
+                        <div className="stats-container">
+                            <div className="stat-item">Clicks: {Math.floor(count)}</div> {/* MODIFICADO AQUÍ */}
+                            <div className="stat-item">CPS: {Math.floor(cps)}</div>
+                            <div className="stat-item">Poder de Clic: {Math.floor(clickPower)}</div>
                         </div>
-                        <button
-                            onClick={() => buyUpgrade(upgrade.id)}
-                            disabled={upgrade.purchased || count < upgrade.cost}
-                            className={`upgrade-button ${upgrade.purchased ? 'upgrade-button-purchased' : 'upgrade-button-available'}`}
-                        >
-                            {upgrade.purchased ? 'Comprado' : `Comprar (${upgrade.cost} Clicks)`}
-                        </button>
                     </div>
-                ))}
-            </div>
+                </div>
 
-            {/* Botón de Momento Inspirador */}
-            <button
-                onClick={triggerInspiration}
-                disabled={!inspirationReady}
-                className='inspiration-button'
-            >
-                {inspirationReady ? '¡Momento Inspirador!' : 'Esperando Inspiración...'}
-            </button>
+                {/* Este div es el "botón" principal del clicker */}
+                <div className='button-heart'>
+                    💖
+                </div>
+
+                <LoveRainCanvas
+                    complimentRainActive={complimentRainActive}
+                    emojiRainActive={emojiRainActive}
+                    complimentRainSpeed={complimentRainSpeed}
+                    emojiRainSpeed={emojiRainSpeed}
+                    onParticleCollect={() => setCount(prev => prev + 0.10)} // Cada vez que cae una partícula, suma 1 clic
+                />
+
+                {/* Tienda de Mejoras */}
+                <div className="shop-container">
+                    <h2>Mejoras</h2>
+                    {baseUpgrades.current.map(upgrade => (
+                        <div
+                            key={upgrade.id}
+                            className={`upgrade-item ${upgrade.type === 'once' && purchasedOnceUpgrades[upgrade.id] ? 'upgrade-item-purchased' : 'upgrade-item-available'}`}
+                        >
+                            <div>
+                                <h3>{upgrade.name}</h3>
+                                <p>{upgrade.description}</p>
+                            </div>
+                            <button
+                                onClick={() => buyUpgrade(upgrade.id)}
+                                disabled={upgrade.type === 'once' && purchasedOnceUpgrades[upgrade.id] || count < upgradeCosts[upgrade.id]}
+                                className={`upgrade-button ${upgrade.type === 'once' && purchasedOnceUpgrades[upgrade.id] ? 'upgrade-button-purchased' : 'upgrade-button-available'}`}
+                            >
+                                {upgrade.type === 'once' && purchasedOnceUpgrades[upgrade.id] ? 'Comprado' : `Comprar (${upgradeCosts[upgrade.id]} Clicks)`}
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </>
     );
 }

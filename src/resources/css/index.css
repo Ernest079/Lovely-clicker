@@ -2,20 +2,21 @@
 
 /* @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); */
 
+/* --- Variables de Tema y Keyframes --- */
 @theme {
-  --color-fuchsiaNeon: #ff55ff;
-  --color-fuchsiaDark: #ff00ff;
-  --color-purpleDark: #aa00aa;
-  --color-fuchsiaDeep: #550055;
-  --color-pinkLight: #ff77ff;
-  --color-pinkMedium: #ff99ff;
-  --color-pinkLighter: #ffbbff;
-  --color-purpleDeep: #cc00cc;
-  --color-redPink: #ff66aa;
-  --color-darkPink: #ff0088;
-  --color-mediumPink: #ff3377;
-  --color-lightPink: #ff5599;
-  --color-vividPink: #ff0099;
+  --color-blueNeon: #00e5ff; /* Previously fuchsiaNeon */
+  --color-blueDark: #00aaff; /* Previously fuchsiaDark */
+  --color-mintDark: #00ccaa; /* Previously purpleDark */
+  --color-blueDeep: #005577; /* Previously fuchsiaDeep */
+  --color-mintLight: #77ffee; /* Previously pinkLight */
+  --color-mintMedium: #99ffdd; /* Previously pinkMedium */
+  --color-mintLighter: #bbffdd; /* Previously pinkLighter */
+  --color-blueDeep2: #0088cc; /* Previously purpleDeep */
+  --color-blueMint: #66ccff; /* Previously redPink */
+  --color-darkBlue: #0077cc; /* Previously darkPink */
+  --color-mediumBlue: #33aaff; /* Previously mediumPink */
+  --color-lightBlue: #55ccff; /* Previously lightPink */
+  --color-vividBlue: #0099ff; /* Previously vividPink */
 
   @keyframes heartbeat {
     0% {
@@ -72,163 +73,284 @@
   }
 }
 
+/* --- Estilos Generales y Layout Principal --- */
 @layer components {
-  .title-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    text-align: center;
-    perspective: 500px;
-    width: 90%;
+  /* Contenedor principal para organizar el juego */
+  .game-container {
+      position: relative; /* Importante para el z-index */
+      display: flex;
+      flex-direction: column; /* Apila los elementos verticalmente */
+      align-items: center; /* Centra horizontalmente */
+      justify-content: flex-start; /* Alinea al inicio verticalmente */
+      width: 100%;
+      height: 100vh; /* Ocupa el 100% de la altura de la ventana */
+      overflow: hidden; /* Asegura que los elementos no se desborden */
+      z-index: 10; /* Asegura que el contenido del juego esté por encima del canvas de fondo */
+      padding-top: 20px; /* Espacio superior para el título */
+      box-sizing: border-box; /* Incluye padding en el tamaño total */
+  }
+
+  /* Estilos para el título y la información de los clics */
+  .header-section {
+      position: relative; /* Para que el z-index funcione */
+      z-index: 15; /* Asegura que esté por encima de los canvases */
+      text-align: center;
+      color: white; /* Color de texto para que sea visible en el fondo oscuro */
+      margin-bottom: 20px; /* Espacio entre el encabezado y el corazón */
   }
 
   .title {
-    /* font-family: 'Press Start 2P', cursive; */
-    font-size: 1.8em;
-    color: var(--color-fuchsiaNeon);
-    text-shadow:
-      2px 2px 0 var(--color-fuchsiaDark),
-      3px 3px 0 var(--color-purpleDark),
-      4px 4px 0 var(--color-fuchsiaDeep);
-    transform: rotateX(10deg) rotateY(-5deg);
-    animation: heartbeat 1.5s infinite, float 3s ease-in-out infinite;
-    display: inline-block;
-    padding: 15px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 3px solid var(--color-fuchsiaNeon);
-    box-shadow:
-      0 0 10px var(--color-fuchsiaDark),
-      inset 0 0 10px var(--color-fuchsiaDark);
-    word-wrap: break-word;
+      /* font-family: 'Press Start 2P', cursive; */
+      font-size: 3em; /* Tamaño grande para el título principal */
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para mejor legibilidad */
+      /* Propiedades de tu anterior .title del index.css, fusionadas aquí */
+      color: var(--color-blueNeon); /* Changed */
+      text-shadow:
+        2px 2px 0 var(--color-blueDark), /* Changed */
+        3px 3px 0 var(--color-mintDark), /* Changed */
+        4px 4px 0 var(--color-blueDeep); /* Changed */
+      transform: rotateX(10deg) rotateY(-5deg); /* Mantiene la transformación 3D */
+      animation: heartbeat 1.5s infinite, float 3s ease-in-out infinite; /* Mantiene las animaciones */
+      display: inline-block;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border: 3px solid var(--color-blueNeon); /* Changed */
+      box-shadow:
+        0 0 10px var(--color-blueDark), /* Changed */
+        inset 0 0 10px var(--color-blueDark); /* Changed */
+      word-wrap: break-word;
   }
 
+  .stats-container {
+      display: flex;
+      gap: 20px; /* Espacio entre los elementos de estadísticas */
+      justify-content: center;
+      font-size: 1.2em;
+  }
+
+  .stat-item {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 8px 15px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Estilos para el botón de corazón */
   .button-heart {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    cursor: pointer;
-    width: 150px;
-    height: 150px;
-    background-color: rgba(255, 105, 180, 0.5);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 4em;
-    color: white;
-    border: 3px solid white;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+      font-size: 5em; /* Tamaño grande para el corazón */
+      cursor: pointer;
+      user-select: none;
+      line-height: 1; /* Elimina espacio extra alrededor del emoji */
+      position: relative; /* Para que esté sobre el canvas */
+      z-index: 10; /* Asegura que esté por encima de los canvases de fondo */
+      margin-top: 50px; /* Espacio para separar del encabezado */
+      animation: pulse 1.5s infinite alternate; /* Animación de pulsación (definida en App.css original) */
+      text-shadow: 0 0 10px rgba(0, 204, 255, 0.7), 0 0 20px rgba(0, 204, 255, 0.5); /* Changed */
+      /* Propiedades de tu anterior .button-heart del index.css, fusionadas aquí */
+      width: 150px; /* Mantiene el tamaño original del botón en index.css */
+      height: 150px; /* Mantiene el tamaño original del botón en index.css */
+      background-color: rgba(0, 191, 255, 0.5); /* Changed */
+      border-radius: 50%; /* Mantiene la forma circular */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      border: 3px solid white;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
   }
 
+  @keyframes pulse {
+      0% {
+          transform: scale(1);
+      }
+      100% {
+          transform: scale(1.05);
+      }
+  }
+
+  /* Estilos para la tienda de mejoras */
   .shop-container {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    color: white;
-    max-width: 600px;
-    width: 90%;
-    max-height: 300px;
-    overflow-y: auto;
-    border: 2px solid white;
+      position: relative; /* Para que el z-index funcione */
+      z-index: 15; /* Asegura que esté por encima de los canvases */
+      margin-top: 50px; /* Espacio entre el corazón y la tienda */
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      width: 90%;
+      max-width: 600px; /* Ancho máximo para la tienda */
+      box-shadow: 0 0 15px rgba(0, 204, 255, 0.5); /* Changed */
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+      /* Propiedades de tu anterior .shop-container del index.css, fusionadas aquí */
+      max-height: 300px;
+      overflow-y: auto;
+      border: 2px solid white; /* Ajuste de borde */
+  }
+
+  .shop-container h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #99eeff; /* Changed */
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
   }
 
   .upgrade-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      /* Propiedades de tu anterior .upgrade-item del index.css, fusionadas aquí */
+      margin-bottom: 10px; /* Reafirmar por si acaso */
+      padding: 10px; /* Reafirmar por si acaso */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Reafirmar por si acaso */
+      border-radius: 5px; /* Reafirmar por si acaso */
   }
 
   .upgrade-item-available {
-    background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.1);
   }
 
-  .upgrade-item-purchased {
-    background-color: rgba(0, 100, 0, 0.5);
+  .upgrade-item-available:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 204, 255, 0.3); /* Changed */
+  }
+
+  .upgrade-item h3 {
+      margin: 0;
+      font-size: 1.3em;
+      color: #ffd700; /* Dorado para los nombres de mejora */
+  }
+
+  .upgrade-item p {
+      margin: 5px 0 0;
+      font-size: 0.9em;
+      color: #ccc;
   }
 
   .upgrade-button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    color: white;
+      background-color: #00ccff; /* Changed */
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      /* Propiedades de tu anterior .upgrade-button del index.css, fusionadas aquí */
+      padding: 8px 15px; /* Reafirmar por si acaso */
+      border: none; /* Reafirmar por si acaso */
+      border-radius: 5px; /* Reafirmar por si acaso */
+      color: white; /* Reafirmar por si acaso */
   }
 
-  .upgrade-button-available {
-    background-color: #007bff;
-    cursor: pointer;
+  .upgrade-button:hover:not(:disabled) {
+      background-color: #00b3e6; /* Changed */
+      transform: scale(1.02);
+  }
+
+  .upgrade-button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      opacity: 0.7;
+  }
+
+  .upgrade-item-purchased {
+      opacity: 0.7;
+      background-color: rgba(0, 255, 0, 0.1); /* Ligero tono verde para comprado */
+      border-color: rgba(0, 255, 0, 0.3);
+      /* Propiedad de tu anterior .upgrade-item-purchased del index.css, fusionada aquí */
+      background-color: rgba(0, 100, 0, 0.5); /* Mantiene tu color original */
   }
 
   .upgrade-button-purchased {
-    background-color: #888;
-    cursor: not-allowed;
+      background-color: #00aa00; /* Verde oscuro para botón comprado */
+      cursor: default;
+      /* Propiedad de tu anterior .upgrade-button-purchased del index.css, fusionada aquí */
+      background-color: #888; /* Mantiene tu color original, que era gris */
   }
 
-  /* Para el botón de inspiración, usaré tus clases de Tailwind existentes y añadiré una si es necesario */
-  .inspiration-button {
+  /* Estilos para el texto de ráfaga (cumplidos al hacer clic) */
+  .burst-text {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
-    padding: 15px 25px;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+    pointer-events: none;
+    animation: fade-out-up 2s forwards;
+    white-space: nowrap;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    /* Propiedades de tu anterior .burst-text del index.css, fusionadas aquí */
+    font-family: 'Arial', sans-serif; /* Mantiene la fuente */
+    color: var(--color-blueNeon); /* Changed */
+    text-shadow: 0 0 5px var(--color-blueDark); /* Changed */
+    z-index: 10; /* Asegura visibilidad */
+    opacity: 0; /* Inicia oculto para la animación */
+    animation: burst-anim 2s forwards; /* Mantiene la animación */
   }
 
-  .inspiration-button:not(:disabled) {
-    background-color: #ffcc00;
-    color: black;
-    cursor: pointer;
+  @keyframes fade-out-up {
+      0% {
+          opacity: 1;
+          transform: translate(0, 0);
+      }
+      100% {
+          opacity: 0;
+          transform: translate(var(--tx), var(--ty));
+      }
   }
 
-  .inspiration-button:disabled {
-    background-color: #888;
-    color: white; /* O un color más oscuro para indicar deshabilitado */
-    cursor: not-allowed;
+  /* Ajustes responsivos básicos (recomendado) */
+  @media (max-width: 768px) {
+      .title {
+          font-size: 2.5em;
+      }
+      .stats-container {
+          flex-direction: column;
+          gap: 10px;
+      }
+      .button-heart {
+          font-size: 10em;
+      }
+      .shop-container {
+          width: 95%;
+          padding: 15px;
+      }
+      .upgrade-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+          text-align: left;
+      }
+      .upgrade-button {
+          width: 100%;
+          margin-top: 10px;
+      }
   }
 }
 
-/* Clases Tailwind existentes, si quieres mantenerlas o moverlas */
+/* --- Clases para Canvases de Fondo --- */
+/* Estas clases deben estar fuera de @layer components si son globales o de Tailwind */
 #galaxyCanvas {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: 0; /* Fondo más alejado */
   width: 100vw;
   height: 100vh;
+  background-color: black; /* Asegura un fondo oscuro si el canvas no se carga */
 }
 
 #loveRain {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 1; /* Encima de la galaxia, pero debajo del contenido principal del juego */
   width: 100vw;
   height: 100vh;
-}
-
-.burst-text {
-  position: absolute;
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  color: var(--color-fuchsiaNeon);
-  text-shadow: 0 0 5px var(--color-fuchsiaDark);
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0;
-  animation: burst-anim 2s forwards;
+  pointer-events: none; /* Permite clics a través del canvas de lluvia */
 }

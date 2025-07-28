@@ -52,10 +52,10 @@ export const GalaxyCanvas = () => {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr); 
+        ctx.scale(dpr, dpr);
 
         ctx.fillStyle = 'rgba(0, 0, 0)';
-        ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr); 
+        ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
         if (!animate.stars) {
             animate.stars = [];

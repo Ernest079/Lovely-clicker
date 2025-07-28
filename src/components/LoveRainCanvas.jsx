@@ -41,7 +41,7 @@ export const LoveRainCanvas = ({
         const newParticle = {
             x: Math.random() * (canvas.width / dpr),
             y: -20,
-            speed: 0.5 + Math.random() * 1.5,
+            speed: 0.2 + Math.random() * 0.5, // Velocidad de caída más lenta
             size: isText ? 8 + Math.random() * 6 : 15 + Math.random() * 15,
             content: isText ?
                 compliments[Math.floor(Math.random() * compliments.length)] :
@@ -50,7 +50,7 @@ export const LoveRainCanvas = ({
             rotation: 0,
             opacity: 0.9,
             sway: Math.random() * 1 - 0.5,
-            swaySpeed: 0.01 + Math.random() * 0.02,
+            swaySpeed: 0.005 + Math.random() * 0.001, // Velocidad de oscilación más lenta
             isText: isText
         };
         particles.current.push(newParticle);
@@ -63,8 +63,8 @@ export const LoveRainCanvas = ({
         if (complimentRainActive) {
             if (complimentTimer.current) clearInterval(complimentTimer.current);
             complimentTimer.current = setInterval(() => {
-                createNewParticle(true); 
-            }, complimentRainSpeed);
+                createNewParticle(true);
+            }, complimentRainSpeed); // Usa la velocidad de lluvia de cumplidos del estado
         } else {
             if (complimentTimer.current) {
                 clearInterval(complimentTimer.current);
@@ -81,7 +81,7 @@ export const LoveRainCanvas = ({
             if (emojiTimer.current) clearInterval(emojiTimer.current);
             emojiTimer.current = setInterval(() => {
                 createNewParticle(false);
-            }, emojiRainSpeed);
+            }, emojiRainSpeed); // Usa la velocidad de lluvia de emojis del estado
         } else {
             if (emojiTimer.current) {
                 clearInterval(emojiTimer.current);
@@ -107,6 +107,10 @@ export const LoveRainCanvas = ({
         ctx.scale(dpr, dpr);
 
         ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+        // Limita el número de partículas para mejorar el rendimiento
+        const maxParticles = 30; // Ajusta este valor según sea necesario
+        const currentParticles = particles.current.slice(-maxParticles); // Mantén solo las últimas N partículas
 
         particles.current.forEach((particle, index) => {
             ctx.save();
@@ -142,7 +146,8 @@ export const LoveRainCanvas = ({
             particle.y += particle.speed;
             particle.x += particle.sway * Math.sin(particle.y * particle.swaySpeed);
 
-            if (particle.y > (canvas.height / dpr) + 50) {
+            // Elimina partículas fuera de la pantalla
+            if (particle.y > (canvas.height / dpr) + 50 || particle.x < -50 || particle.x > (canvas.width / dpr) + 50) {
                 particles.current.splice(index, 1);
             }
         });
@@ -160,7 +165,7 @@ export const LoveRainCanvas = ({
                 canvas.width = rect.width * dpr;
                 canvas.height = rect.height * dpr;
                 canvas.getContext('2d').scale(dpr, dpr);
-                particles.current = [];
+                particles.current = []; // Limpia las partículas al redimensionar
             }
         };
 
