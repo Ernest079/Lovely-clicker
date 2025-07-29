@@ -4,19 +4,19 @@
 
 /* --- Variables de Tema y Keyframes --- */
 @theme {
-  --color-blueNeon: #00e5ff; /* Previously fuchsiaNeon */
-  --color-blueDark: #00aaff; /* Previously fuchsiaDark */
-  --color-mintDark: #00ccaa; /* Previously purpleDark */
-  --color-blueDeep: #005577; /* Previously fuchsiaDeep */
-  --color-mintLight: #77ffee; /* Previously pinkLight */
-  --color-mintMedium: #99ffdd; /* Previously pinkMedium */
-  --color-mintLighter: #bbffdd; /* Previously pinkLighter */
-  --color-blueDeep2: #0088cc; /* Previously purpleDeep */
-  --color-blueMint: #66ccff; /* Previously redPink */
-  --color-darkBlue: #0077cc; /* Previously darkPink */
-  --color-mediumBlue: #33aaff; /* Previously mediumPink */
-  --color-lightBlue: #55ccff; /* Previously lightPink */
-  --color-vividBlue: #0099ff; /* Previously vividPink */
+  --color-blueNeon: #00e5ff; 
+  --color-blueDark: #00aaff; 
+  --color-mintDark: #00ccaa; 
+  --color-blueDeep: #005577; 
+  --color-mintLight: #77ffee;
+  --color-mintMedium: #99ffdd; 
+  --color-mintLighter: #bbffdd; 
+  --color-blueDeep2: #0088cc; 
+  --color-blueMint: #66ccff; 
+  --color-darkBlue: #0077cc; 
+  --color-mediumBlue: #33aaff; 
+  --color-lightBlue: #55ccff; 
+  --color-vividBlue: #0099ff; 
 
   @keyframes heartbeat {
     0% {
