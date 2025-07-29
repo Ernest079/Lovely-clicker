@@ -3,21 +3,22 @@ import { useRef, useEffect, useCallback } from 'react';
 export const LoveRainCanvas = ({
     complimentRainActive,
     emojiRainActive,
-    complimentRainSpeed, // Intervalo de tiempo para generar nuevas partículas
+    complimentRainSpeed,
     emojiRainSpeed,
-    onParticleCollect // Función para sumar clics
+    onParticleCollect
 }) => {
     const compliments = [
-        "Tus ojos brillan", "Sonrisa perfecta", "Eres angelical",
-        "Belleza única", "Piel de seda", "Labios de miel",
-        "Mirada cautivante", "Eres un sueño", "Figura divina",
-        "Eres luz", "Cabello hermoso", "Elegante y bella",
+        "Cielito Lindo de Ojos Morenos", "Sonrisa perfecta", "Eres Wapisima",
+        "BELLA", "Piel de Canela", "Labios de miel",
+        "Mirada de Estrellas", "Eres un sueño", "Figura divina",
+        "BOMBON", "Cabello hermoso", "PRECIOSA",
         "Radiante", "Eres magia", "Belleza sin igual",
         "De otro mundo", "Eres arte", "Diosa terrenal",
-        "Hermosa por siempre", "Lo más bello", "Perfecta en todo",
+        "Hermosa por siempre", "Lo más bello del Universo", "Perfecta en todo",
         "Eres la mejor", "Belleza pura", "Me vuelves loco",
         "Eres increíble", "Me fascinas", "Todo en ti es perfecto",
-        "Eres especial", "Mi razón", "Mi inspiración"
+        "Eres especial", "Mi razón", "Mi inspiración", "Mi Musa",  "Mi Todo",
+        "Mas Bella que el mismo Cielo", 
     ];
 
     const symbols = ["❤️", "💖", "💘", "💝", "🌹", "✨", "🥰", "💕"];

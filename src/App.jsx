@@ -49,19 +49,19 @@ export function App() {
     // Definición base de las mejoras. 'initialCost' es el precio de la primera compra.
     const baseUpgrades = useRef([
         {
-            id: 'clickPower1',
-            name: 'Doble Caricia',
-            description: 'Duplica el poder de tu clic.',
-            initialCost: 100, // Costo inicial
-            effect: () => setClickPower(prev => prev * 1.3),
-            type: 'repeatable'
-        },
-        {
             id: 'autoClicker1',
             name: 'Pensamiento Constante',
             description: 'Genera mas clics por segundo automáticamente.',
             initialCost: 50, // Costo inicial
             effect: () => setCps(prev => prev + 0.20), // Aumenta en 0.20
+            type: 'repeatable'
+        },
+        {
+            id: 'clickPower1',
+            name: 'Doble Click',
+            description: 'Duplica el poder de tu clic.',
+            initialCost: 100, // Costo inicial
+            effect: () => setClickPower(prev => prev * 1.3),
             type: 'repeatable'
         },
         {
@@ -74,8 +74,8 @@ export function App() {
         },
         {
             id: 'complimentRainSpeed',
-            name: 'Aumentar Lluvia de Cumplidos',
-            description: 'Los cumplidos caen más rápido.',
+            name: 'Aumentar Lluvia',
+            description: 'La lluvia cae más rápido.',
             initialCost: 500,
             effect: () => setComplimentRainSpeed(prev => Math.max(10, prev - 10)),
             type: 'repeatable'
