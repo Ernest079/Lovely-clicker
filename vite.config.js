@@ -8,4 +8,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: 'https://Ernest079.github.io/Lovely-clicker'
 })
